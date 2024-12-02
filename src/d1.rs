@@ -3,8 +3,6 @@
 
 use std::collections::HashMap;
 
-use itertools::Itertools;
-
 type Model = (Vec<u32>, Vec<u32>);
 type Answer = u32;
 
