@@ -4,22 +4,30 @@ These are my Rust solutions for [Advent of Code 2024](https://adventofcode.com/2
 
 [My AoC solutions for other years](https://github.com/mwcz?tab=repositories&q=advent&type=source&language=&sort=name)
 
-## Running solutions
+## Initial setup
 
-Install [justfile](https://just.systems/man/en/) and run `just --list` to get started.
+ - Install [justfile](https://just.systems/man/en/)
+ - Install [entr](https://eradman.com/entrproject/)
+
+**Fedora**
+```sh
+dnf install just entr
+```
 
 ## Example commands
 
 | Purpose                       | Command                                    |
 | ---                           | ---                                        |
+| List all commands             | `just --list`                              |
 | Start day 1                   | `just day 1`                               |
-| Run day 3 on file change      | `just watch 3`                             |
+| Run day 3 on file change      | `just watch run 3`                         |
 | Run day 16 with example input | `just run 16 -e`                           |
+| Run day 3 part 1 only         | `just run 3 -p 1`                          |
 | Run day 1 with custom input   | `just run 1 -i examples/custom_input_file` |
 | Run day 21 in release mode    | `just r 21`                                |
-| Run tests | `just test`                                |
-| Run tests for day 13 | `just test 13`                                |
-| Run all tests | `just test_all`                                |
+| Run tests                     | `just test`                                |
+| Run tests for day 13          | `just test 13`                             |
+| Run all tests                 | `just test_all`                            |
 
 `cargo run` can be used directly, but 
 

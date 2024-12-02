@@ -3,8 +3,6 @@ use std::{
     ops::{Add, Sub},
 };
 
-use pathfinding::num_traits::Zero;
-
 use crate::{direction::CardDir, grid::Grid};
 
 #[derive(Eq, PartialEq, Debug, Copy, Clone, Hash, Ord, PartialOrd)]
@@ -33,16 +31,6 @@ impl<const D: usize> Add for Point<D> {
             *c += rhs.coords[i];
         }
         new_coords.into()
-    }
-}
-
-impl<const D: usize> Zero for Point<D> {
-    fn zero() -> Self {
-        [0; D].into()
-    }
-
-    fn is_zero(&self) -> bool {
-        self.coords.iter().all(|c| *c == 0)
     }
 }
 
