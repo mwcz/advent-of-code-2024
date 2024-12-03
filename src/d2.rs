@@ -1,6 +1,8 @@
 //! A solution to day 2 year 2024.
 //! https://adventofcode.com/2024/day/2
 
+use std::ops::Sub;
+
 type Model = Vec<Vec<i32>>;
 type Answer = usize;
 
@@ -23,7 +25,7 @@ fn is_safe<const DAMP: bool>(report: Vec<i32>) -> Option<()> {
         let b = pair[1];
 
         if a == b {
-            return problem(&report, DAMP);
+            return problem(&report, i, DAMP);
         }
 
         let this_dir = (b - a) / (b - a).abs();
@@ -33,20 +35,20 @@ fn is_safe<const DAMP: bool>(report: Vec<i32>) -> Option<()> {
         }
 
         if dir != this_dir {
-            return problem(&report, DAMP);
+            return problem(&report, i, DAMP);
         }
 
         if (b - a).abs() > 3 {
-            return problem(&report, DAMP);
+            return problem(&report, i, DAMP);
         }
     }
 
     Some(())
 }
 
-fn problem(report: &[i32], damp: bool) -> Option<()> {
+fn problem(report: &[i32], index: usize, damp: bool) -> Option<()> {
     if damp {
-        dampen(report)
+        dampen(report, index)
             .into_iter()
             .any(|r| is_safe::<false>(r).is_some())
             .then_some(())
@@ -55,10 +57,13 @@ fn problem(report: &[i32], damp: bool) -> Option<()> {
     }
 }
 
-fn dampen(report: &[i32]) -> Vec<Vec<i32>> {
+fn dampen(report: &[i32], index: usize) -> Vec<Vec<i32>> {
     let mut reports = Vec::with_capacity(report.len());
 
-    for i in 0..report.len() {
+    let start = if index == 0 { 0 } else { index - 1 };
+    let end = (index + 2).min(report.len());
+
+    for i in start..end {
         let mut rep = report.to_vec();
         rep.remove(i);
         reports.push(rep);
@@ -101,6 +106,6 @@ mod tests {
 
     #[test]
     fn d2p2_input_test() {
-        assert_eq!(part2(parse(INPUT.to_string())), 0);
+        assert_eq!(part2(parse(INPUT.to_string())), 612);
     }
 }
