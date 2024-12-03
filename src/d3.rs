@@ -21,7 +21,7 @@ pub fn part2(model: Model) -> Answer {
 #[derive(Debug)]
 struct StateMachine {
     state: State,
-    last_state: State,
+    prev_state: State,
     num1: u64,
     num2: u64,
     conds: bool,
@@ -50,7 +50,7 @@ impl StateMachine {
     fn new(conds: bool) -> StateMachine {
         StateMachine {
             state: State::Scanning,
-            last_state: State::Scanning,
+            prev_state: State::Scanning,
             num1: 0,
             num2: 0,
             conds,
@@ -64,7 +64,6 @@ impl StateMachine {
         for c in input.chars() {
             if let Some(vals) = self.feed(c) {
                 sum += vals.0 * vals.1;
-                self.reset();
             }
         }
 
@@ -74,7 +73,7 @@ impl StateMachine {
     fn feed(&mut self, c: char) -> Option<(u64, u64)> {
         use State::*;
 
-        let last_state = self.state;
+        let prev_state = self.state;
 
         self.state = match self.state {
             // scan for mul
@@ -110,7 +109,7 @@ impl StateMachine {
             D if c == 'o' => O,
             O if c == '(' => LeftParen,
             LeftParen if c == ')' => {
-                self.mul_enabled = self.last_state == O;
+                self.mul_enabled = self.prev_state == O;
                 Scanning
             }
             O if c == 'n' => N,
@@ -125,14 +124,14 @@ impl StateMachine {
             }
         };
 
-        self.last_state = last_state;
+        self.prev_state = prev_state;
 
         None
     }
 
     fn reset(&mut self) {
         self.state = State::Scanning;
-        self.last_state = State::Scanning;
+        self.prev_state = State::Scanning;
         self.num1 = 0;
         self.num2 = 0;
     }
