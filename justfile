@@ -82,8 +82,6 @@ FORCE_DEFAULT := ""
 # retrieve the files used for a given day
 @files DAY:
   { \
-    find src -name "lib.rs"; \
-    find src -name "main.rs"; \
     find src -name "d{{DAY}}.rs"; \
     echo "examples/d{{DAY}}"; \
     find examples -name "d{{DAY}}-*"; \
