@@ -131,7 +131,7 @@ impl<T: Copy> Grid<T> {
     }
 }
 
-impl<T: Copy + PartialEq + std::fmt::Debug> Grid<T> {
+impl<T: Copy + PartialEq> Grid<T> {
     pub fn match_kernel<const D: usize>(&self, kernel: [[Option<T>; D]; D], pos: Point<2>) -> bool {
         for ky in 0..D {
             for kx in 0..D {
