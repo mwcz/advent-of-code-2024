@@ -131,6 +131,25 @@ impl<T: Copy> Grid<T> {
     }
 }
 
+impl<T: Copy + PartialEq + std::fmt::Debug> Grid<T> {
+    pub fn match_kernel<const D: usize>(&self, kernel: [[Option<T>; D]; D], pos: Point<2>) -> bool {
+        for ky in 0..D {
+            for kx in 0..D {
+                if let Some(k) = kernel[ky][kx] {
+                    if self
+                        .get(pos.x() + kx, pos.y() + ky)
+                        .and_then(|c| (c == k).then_some(()))
+                        .is_none()
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        true
+    }
+}
+
 impl<T> Display for Grid<T>
 where
     T: Display + Copy,

@@ -44,7 +44,7 @@ pub fn part1(model: Model) -> Answer {
 }
 
 pub fn part2(model: Model) -> Answer {
-    0
+    search_p2(&model.0)
 }
 
 fn search_p1(grid: &Grid<Letter>, letter: Letter, point: Point<2>, dir: OrdDir) -> usize {
@@ -70,13 +70,53 @@ fn search_p1(grid: &Grid<Letter>, letter: Letter, point: Point<2>, dir: OrdDir) 
     }
 }
 
+fn search_p2(grid: &Grid<Letter>) -> usize {
+    use Letter::*;
+
+    let kernels = [
+        [
+            [Some(M), None, Some(M)],
+            [None, Some(A), None],
+            [Some(S), None, Some(S)],
+        ],
+        [
+            [Some(S), None, Some(M)],
+            [None, Some(A), None],
+            [Some(S), None, Some(M)],
+        ],
+        [
+            [Some(S), None, Some(S)],
+            [None, Some(A), None],
+            [Some(M), None, Some(M)],
+        ],
+        [
+            [Some(M), None, Some(S)],
+            [None, Some(A), None],
+            [Some(M), None, Some(S)],
+        ],
+    ];
+
+    let mut sum = 0;
+    for kernel in kernels {
+        for x in 0..grid.width() - 2 {
+            for y in 0..grid.height() - 2 {
+                if grid.match_kernel(kernel, [x, y].into()) {
+                    sum += 1;
+                }
+            }
+        }
+    }
+
+    sum
+}
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Letter {
     X,
     M,
     A,
     S,
-    None,
+    Other,
 }
 
 impl Letter {
@@ -85,8 +125,8 @@ impl Letter {
             Letter::X => Letter::M,
             Letter::M => Letter::A,
             Letter::A => Letter::S,
-            Letter::S => Letter::None,
-            Letter::None => Letter::None,
+            Letter::S => Letter::Other,
+            Letter::Other => Letter::Other,
         }
     }
 }
@@ -99,7 +139,7 @@ impl From<char> for Letter {
             'M' => M,
             'A' => A,
             'S' => S,
-            _ => None,
+            _ => Other,
         }
     }
 }
