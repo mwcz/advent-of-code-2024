@@ -1,7 +1,7 @@
 //! A solution to day 4 year 2024.
 //! https://adventofcode.com/2024/day/4
 
-use crate::{direction::OrdDir, grid::Grid, point::Point};
+use crate::{direction::CardOrdDir, grid::Grid, point::Point};
 
 type Model = (Grid<Letter>, Vec<Point<2>>);
 type Answer = usize;
@@ -35,7 +35,7 @@ pub fn part1(model: Model) -> Answer {
     let mut sum = 0;
 
     for xloc in model.1 {
-        for dir in OrdDir::all() {
+        for dir in CardOrdDir::all() {
             sum += search_p1(&model.0, Letter::X, xloc, dir);
         }
     }
@@ -47,7 +47,7 @@ pub fn part2(model: Model) -> Answer {
     search_p2(&model.0)
 }
 
-fn search_p1(grid: &Grid<Letter>, letter: Letter, point: Point<2>, dir: OrdDir) -> usize {
+fn search_p1(grid: &Grid<Letter>, letter: Letter, point: Point<2>, dir: CardOrdDir) -> usize {
     if letter == Letter::S {
         return 1;
     }

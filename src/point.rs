@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    direction::{CardDir, OrdDir},
+    direction::{CardDir, CardOrdDir},
     grid::Grid,
 };
 
@@ -93,34 +93,34 @@ impl<const D: usize> Point<D> {
 
     /// Attempt to move the point one unit in the given direction (diagonals allowed), within a
     /// grid bounds.  Returns None if the move would push the point outside the bounds of the grid.
-    pub fn move_in_grid_diag<T: Copy>(&self, dir: OrdDir, grid: &Grid<T>) -> Option<Point<D>> {
+    pub fn move_in_grid_diag<T: Copy>(&self, dir: CardOrdDir, grid: &Grid<T>) -> Option<Point<D>> {
         let mut p = *self;
         match dir {
-            OrdDir::Up => {
+            CardOrdDir::Up => {
                 p.set_y(p.y().checked_sub(1)?);
             }
-            OrdDir::Down => {
+            CardOrdDir::Down => {
                 p.set_y(p.y().checked_add(1)?);
             }
-            OrdDir::Left => {
+            CardOrdDir::Left => {
                 p.set_x(p.x().checked_sub(1)?);
             }
-            OrdDir::Right => {
+            CardOrdDir::Right => {
                 p.set_x(p.x().checked_add(1)?);
             }
-            OrdDir::UpLeft => {
+            CardOrdDir::UpLeft => {
                 p.set_x(p.x().checked_sub(1)?);
                 p.set_y(p.y().checked_sub(1)?);
             }
-            OrdDir::UpRight => {
+            CardOrdDir::UpRight => {
                 p.set_x(p.x().checked_add(1)?);
                 p.set_y(p.y().checked_sub(1)?);
             }
-            OrdDir::DownLeft => {
+            CardOrdDir::DownLeft => {
                 p.set_x(p.x().checked_sub(1)?);
                 p.set_y(p.y().checked_add(1)?);
             }
-            OrdDir::DownRight => {
+            CardOrdDir::DownRight => {
                 p.set_x(p.x().checked_add(1)?);
                 p.set_y(p.y().checked_add(1)?);
             }

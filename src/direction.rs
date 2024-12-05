@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+/// The cardinal directions.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum CardDir {
     Up,
@@ -23,8 +24,9 @@ impl Display for CardDir {
     }
 }
 
+/// Cardinal and ordinal (intercardinal) directions.
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum OrdDir {
+pub enum CardOrdDir {
     UpLeft,
     Up,
     UpRight,
@@ -35,9 +37,9 @@ pub enum OrdDir {
     DownRight,
 }
 
-impl OrdDir {
-    pub fn all() -> [OrdDir; 8] {
-        use OrdDir::*;
+impl CardOrdDir {
+    pub fn all() -> [CardOrdDir; 8] {
+        use CardOrdDir::*;
         [UpLeft, Up, UpRight, Left, Right, DownLeft, Down, DownRight]
     }
 }
