@@ -34,3 +34,10 @@ pub enum OrdDir {
     Down,
     DownRight,
 }
+
+impl OrdDir {
+    pub fn all() -> [OrdDir; 8] {
+        use OrdDir::*;
+        [UpLeft, Up, UpRight, Left, Right, DownLeft, Down, DownRight]
+    }
+}

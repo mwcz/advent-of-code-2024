@@ -3,7 +3,10 @@ use std::{
     ops::{Add, Sub},
 };
 
-use crate::{direction::CardDir, grid::Grid};
+use crate::{
+    direction::{CardDir, OrdDir},
+    grid::Grid,
+};
 
 #[derive(Eq, PartialEq, Debug, Copy, Clone, Hash, Ord, PartialOrd)]
 pub struct Point<const D: usize> {
@@ -69,8 +72,8 @@ impl<const D: usize> Point<D> {
         self.coords.iter().product::<usize>() / self.coords.len()
     }
 
-    /// Attempt to move the point one unit in the given direction, within a grid bounds.  Returns
-    /// None if the move would push the point outside the bounds of the grid.
+    /// Attempt to move the point one unit in the given direction (no diagonals), within a grid
+    /// bounds.  Returns None if the move would push the point outside the bounds of the grid.
     pub fn move_in_grid<T: Copy>(&self, dir: CardDir, grid: &Grid<T>) -> Option<Point<D>> {
         let mut p = *self;
 
@@ -79,6 +82,48 @@ impl<const D: usize> Point<D> {
             CardDir::Down => p.set_y(p.y().checked_add(1)?),
             CardDir::Left => p.set_x(p.x().checked_sub(1)?),
             CardDir::Right => p.set_x(p.x().checked_add(1)?),
+        }
+
+        if grid.width() > p.x() && grid.height() > p.y() {
+            Some(p)
+        } else {
+            None
+        }
+    }
+
+    /// Attempt to move the point one unit in the given direction (diagonals allowed), within a
+    /// grid bounds.  Returns None if the move would push the point outside the bounds of the grid.
+    pub fn move_in_grid_diag<T: Copy>(&self, dir: OrdDir, grid: &Grid<T>) -> Option<Point<D>> {
+        let mut p = *self;
+        match dir {
+            OrdDir::Up => {
+                p.set_y(p.y().checked_sub(1)?);
+            }
+            OrdDir::Down => {
+                p.set_y(p.y().checked_add(1)?);
+            }
+            OrdDir::Left => {
+                p.set_x(p.x().checked_sub(1)?);
+            }
+            OrdDir::Right => {
+                p.set_x(p.x().checked_add(1)?);
+            }
+            OrdDir::UpLeft => {
+                p.set_x(p.x().checked_sub(1)?);
+                p.set_y(p.y().checked_sub(1)?);
+            }
+            OrdDir::UpRight => {
+                p.set_x(p.x().checked_add(1)?);
+                p.set_y(p.y().checked_sub(1)?);
+            }
+            OrdDir::DownLeft => {
+                p.set_x(p.x().checked_sub(1)?);
+                p.set_y(p.y().checked_add(1)?);
+            }
+            OrdDir::DownRight => {
+                p.set_x(p.x().checked_add(1)?);
+                p.set_y(p.y().checked_add(1)?);
+            }
         }
 
         if grid.width() > p.x() && grid.height() > p.y() {

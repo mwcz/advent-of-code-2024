@@ -47,16 +47,20 @@ FORCE_DEFAULT := ""
     echo "source for {{DAY}} already exists in src/d{{DAY}}.rs"; \
   fi
 
+# # open DAY's files in vim or neovim (src, input, & example)
+# @vim DAY:
+#   commands=(${NVIM_BIN:-"nvim"} nvim vim); \
+#   for cmd in "${commands[@]}"; do \
+#     if command -v "$cmd" > /dev/null; then \
+#       echo "opening day {{DAY}}'s files with $cmd"; \
+#       just files {{DAY}} | xargs "$cmd"; \
+#       break; \
+#     fi \
+#   done \
 # open DAY's files in vim or neovim (src, input, & example)
 @vim DAY:
-  commands=(${NVIM_BIN:-"nvim"} nvim vim); \
-  for cmd in "${commands[@]}"; do \
-    if command -v "$cmd" > /dev/null; then \
-      echo "opening day {{DAY}}'s files with $cmd"; \
-      just files {{DAY}} | xargs "$cmd"; \
-      break; \
-    fi \
-  done \
+  echo "opening day {{DAY}}'s files with $EDITOR"; \
+  just files {{DAY}} | xargs "$EDITOR";
 
 # update src/lib.rs with the new day
 @update_lib DAY:
