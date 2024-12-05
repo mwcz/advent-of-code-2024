@@ -106,11 +106,8 @@ mod tests {
         assert_eq!(part2(parse(EXAMPLE.to_string())), 123);
     }
 
-    // #[test]
-    // fn d5p2_input_test() {
-    //     assert_eq!(
-    //         part2(parse(INPUT.to_string())),
-    //         "put part 2 final answer here"
-    //     );
-    // }
+    #[test]
+    fn d5p2_input_test() {
+        assert_eq!(part2(parse(INPUT.to_string())), 4598);
+    }
 }
