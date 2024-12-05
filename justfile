@@ -73,7 +73,7 @@ FORCE_DEFAULT := ""
 
 # shorthand for cargo run -r
 @r DAY *ARGS:
-  cargo r -r -- -d {{DAY}} {{ARGS}}
+  cargo r --quiet -r -- -d {{DAY}} {{ARGS}}
 
 # run with console visualization (not all days have this)
 @viz DAY *ARGS:
