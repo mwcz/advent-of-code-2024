@@ -55,6 +55,14 @@ impl<T: Copy> Grid<T> {
             self.cells[row_idx][i] = *t;
         }
     }
+
+    /// Set data in the grid.  Panics if the coordinates are out of bounds.
+    pub fn set(&mut self, x: usize, y: usize, new_data: T) {
+        assert!(y < self.cells.len());
+        assert!(x < self.cells[0].len());
+        self.cells[y][x] = new_data;
+    }
+
     /// Get cells adjacent to the given point in the cardinal directions.  Origin is up-left from
     /// the given point.  Cells outside the grid bounds will be None.
     ///
