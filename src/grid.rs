@@ -32,6 +32,13 @@ impl<T: Copy> Grid<T> {
         self.cells.get(y).and_then(|row| row.get(x)).copied()
     }
 
+    pub fn getp(&self, p: Point<2>) -> Option<T> {
+        self.cells
+            .get(p.y() as usize)
+            .and_then(|row| row.get(p.x() as usize))
+            .copied()
+    }
+
     pub fn cols(&self) -> Vec<Vec<T>> {
         (0..self.cells[0].len())
             .map(|x| (0..self.cells.len()).map(|y| self.cells[y][x]).collect())
@@ -61,6 +68,15 @@ impl<T: Copy> Grid<T> {
         assert!(y < self.cells.len());
         assert!(x < self.cells[0].len());
         self.cells[y][x] = new_data;
+    }
+
+    /// Set data in the grid using a Point as coordinates.  Panics if the coordinates are out of bounds.
+    pub fn setp(&mut self, p: Point<2>, new_data: T) {
+        assert!(p.x() > 0);
+        assert!(p.y() > 0);
+        assert!((p.y() as usize) < self.cells.len());
+        assert!((p.x() as usize) < self.cells[0].len());
+        self.cells[p.y() as usize][p.x() as usize] = new_data;
     }
 
     /// Get cells adjacent to the given point in the cardinal directions.  Origin is up-left from
@@ -145,7 +161,7 @@ impl<T: Copy + PartialEq> Grid<T> {
             for kx in 0..D {
                 if let Some(k) = kernel[ky][kx] {
                     if self
-                        .get(pos.x() + kx, pos.y() + ky)
+                        .get(pos.x() as usize + kx, pos.y() as usize + ky)
                         .and_then(|c| (c == k).then_some(()))
                         .is_none()
                     {

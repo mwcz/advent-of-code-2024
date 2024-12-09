@@ -11,7 +11,7 @@ type Model = Map;
 type Answer = usize;
 
 pub fn parse(input: String) -> Model {
-    let mut guard: (Point<2>, CardDir) = ([0, 0].into(), CardDir::Up);
+    let mut guard: (Point<2>, CardDir) = ([0usize, 0].into(), CardDir::Up);
 
     let cells = input
         .lines()
@@ -22,7 +22,7 @@ pub fn parse(input: String) -> Model {
                 .map(|(x, c)| {
                     let spot = Spot::from(c);
                     if let Spot::Guard(d) = spot {
-                        guard.0.coords = [x, y];
+                        guard.0.coords = [x as i64, y as i64];
                         guard.1 = d;
                         Spot::Empty
                     } else {
@@ -68,13 +68,13 @@ pub fn part2(mut model: Model) -> Answer {
         .collect::<Vec<(Point<2>, CardDir)>>()
     {
         let mut submodel = model2.clone();
-        submodel.grid.set(pair.0.x(), pair.0.y(), Spot::Obstacle);
+        submodel.grid.setp(pair.0, Spot::Obstacle);
 
         while let Some(seen) = submodel.next() {
             // std::thread::sleep_ms(2);
             // println!("\n\n{submodel}");
             if seen {
-                obs.insert((pair.0.x(), pair.0.y()));
+                obs.insert((pair.0.x() as usize, pair.0.y() as usize));
                 break;
             }
         }
@@ -133,7 +133,7 @@ impl Map {
     /// None means we left the grid.
     fn next(&mut self) -> Option<bool> {
         let new_pos = self.guard.0.move_in_grid(self.guard.1, &self.grid)?;
-        let new_spot = self.grid.get(new_pos.x(), new_pos.y())?;
+        let new_spot = self.grid.getp(new_pos)?;
 
         match new_spot {
             Spot::Obstacle => self.guard.1 = self.guard.1.cw(),
@@ -156,10 +156,9 @@ impl Map {
         obs_list: &HashSet<Point<2>>,
     ) -> Option<(Point<2>, HashSet<Point<2>>)> {
         if let Some(new_pos) = self.guard.0.move_in_grid(self.guard.1, &self.grid) {
-            if matches!(self.grid.get(new_pos.x(), new_pos.y()), Some(Spot::Empty))
-                && !obs_list.contains(&new_pos)
+            if matches!(self.grid.getp(new_pos), Some(Spot::Empty)) && !obs_list.contains(&new_pos)
             {
-                self.grid.set(new_pos.x(), new_pos.y(), Spot::Obstacle);
+                self.grid.setp(new_pos, Spot::Obstacle);
                 let mut new_list = obs_list.clone();
                 new_list.insert(new_pos);
                 Some((new_pos, new_list))

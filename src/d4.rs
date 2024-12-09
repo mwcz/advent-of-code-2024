@@ -57,7 +57,7 @@ fn search_p1(grid: &Grid<Letter>, letter: Letter, point: Point<2>, dir: CardOrdD
 
     let next_point = point.move_in_grid_diag(dir, grid);
 
-    let next = next_point.and_then(|p| grid.get(p.x(), p.y()));
+    let next = next_point.and_then(|p| grid.getp(p));
 
     if let Some(letter_in_line) = next {
         if letter_in_line == letter.next() {
