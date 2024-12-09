@@ -1,20 +1,96 @@
 //! A solution to day 9 year 2024.
 //! https://adventofcode.com/2024/day/9
 
-type Model = u8;
-type Answer = String;
+type Model = Vec<u64>;
+type Answer = usize;
 
 pub fn parse(input: String) -> Model {
-    0
+    input
+        .trim()
+        .chars()
+        .map(|c| c.to_digit(10).unwrap() as u64)
+        .collect()
 }
 
 pub fn part1(model: Model) -> Answer {
-    "incomplete".to_string()
+    // println!("{:?}", model);
+
+    let mut disk: Vec<Block> = Vec::with_capacity(model.iter().sum::<u64>() as usize);
+    let mut empties: Vec<usize> = Vec::with_capacity(disk.len());
+    let mut fulls: Vec<usize> = Vec::with_capacity(disk.len());
+
+    let mut id = 0;
+    let mut total_file_size = 0;
+
+    for pair in model.chunks(2) {
+        for _ in 0..pair[0] {
+            fulls.push(disk.len());
+            disk.push(Block::File(ID(id)));
+            total_file_size += 1;
+        }
+        if pair.len() == 2 {
+            for _ in 0..pair[1] {
+                empties.push(disk.len());
+                disk.push(Block::Empty);
+            }
+        }
+        id += 1;
+    }
+
+    empties.reverse();
+
+    // println!("{:?}", disk);
+    // println!("total file size {:?}", total_file_size);
+    // println!("EMPTY {:?}", empties);
+    // println!("FULL {:?}", fulls);
+
+    loop {
+        let block_id = fulls.pop().unwrap();
+        let empty_id = empties.pop().unwrap();
+        if empty_id >= total_file_size {
+            break;
+        }
+        disk.swap(block_id, empty_id);
+    }
+
+    // print_disk(&disk);
+    score_disk(&disk)
+}
+
+fn score_disk(disk: &[Block]) -> usize {
+    disk.iter()
+        .enumerate()
+        .map(|(i, b)| match b {
+            Block::Empty => 0,
+            Block::File(id) => id.0 as usize * i,
+        })
+        .sum()
+}
+
+fn print_disk(disk: &[Block]) {
+    let msg = disk
+        .iter()
+        .map(|b| match b {
+            Block::Empty => ".".to_string(),
+            Block::File(id) => format!("{}", id.0),
+        })
+        .collect::<Vec<String>>()
+        .join(",");
+    println!("{msg}");
 }
 
 pub fn part2(model: Model) -> Answer {
-    "incomplete".to_string()
+    0
 }
+
+#[derive(Debug)]
+enum Block {
+    Empty,
+    File(ID),
+}
+
+#[derive(Debug)]
+struct ID(u64);
 
 // #[cfg(test)]
 // mod tests {
@@ -27,7 +103,7 @@ pub fn part2(model: Model) -> Answer {
 //     // fn d9p1_example_test() {
 //     //     assert_eq!(
 //     //         part1(parse(EXAMPLE.to_string())),
-//     //         "put part 1 example answer here"
+//     //         1928
 //     //     );
 //     // }
 //     //
