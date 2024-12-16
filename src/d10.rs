@@ -1,12 +1,15 @@
 //! A solution to day 10 year 2024.
 //! https://adventofcode.com/2024/day/10
 
+use std::collections::HashSet;
+
+use itertools::Itertools;
 use termion::{color, style};
 
 use crate::{grid::Grid, point::Point};
 
 type Model = Map;
-type Answer = u32;
+type Answer = usize;
 
 pub fn parse(input: String) -> Model {
     let mut trailheads = Vec::new();
@@ -36,12 +39,28 @@ pub fn parse(input: String) -> Model {
 }
 
 pub fn part1(model: Model) -> Answer {
-    println!("{}", model.topography);
-    println!("{:?}", model.trailheads);
+    #[cfg(feature = "visualize")]
+    let mut all_peaks = HashSet::new();
+
     model
         .trailheads
         .iter()
-        .map(|trailhead| model.search(*trailhead))
+        .map(|trailhead| {
+            let mut peaks = HashSet::new();
+
+            #[cfg(feature = "visualize")]
+            let mut steps = [*trailhead].into();
+
+            model.search(
+                *trailhead,
+                &mut peaks,
+                #[cfg(feature = "visualize")]
+                &mut steps,
+                #[cfg(feature = "visualize")]
+                &mut all_peaks,
+            );
+            peaks.iter().unique().count()
+        })
         .sum()
     // model.search(model.trailheads[0])
 }
@@ -56,68 +75,78 @@ pub struct Map {
 }
 
 impl Map {
-    fn search(&self, loc: Point<2>) -> u32 {
+    fn search(
+        &self,
+        loc: Point<2>,
+        mut peaks: &mut HashSet<Point<2>>,
+        #[cfg(feature = "visualize")] mut steps: &mut HashSet<Point<2>>,
+        #[cfg(feature = "visualize")] mut all_peaks: &mut HashSet<Point<2>>,
+    ) {
         let cur = self.topography.getp(loc).unwrap();
 
-        std::thread::sleep_ms(10);
-        println!("{}", termion::clear::All);
-        let mut output = format!("{}", self.topography);
-        for (y, line) in output.lines().enumerate() {
-            for (x, c) in line.chars().enumerate() {
-                if loc.x() == x as i64 && loc.y() == y as i64 {
-                    if cur == 9 {
-                        print!(
-                            "{blue}{c}{reset}",
-                            blue = color::Fg(color::Blue),
-                            reset = style::Reset
-                        );
+        #[cfg(feature = "visualize")]
+        {
+            std::thread::sleep_ms(10);
+            println!("{}", termion::clear::All);
+            let mut output = format!("{}", self.topography);
+            for (y, line) in output.lines().enumerate() {
+                for (x, c) in line.chars().enumerate() {
+                    let current_loc = loc.x() == x as i64 && loc.y() == y as i64;
+
+                    let whitebg = color::Bg(color::LightWhite);
+                    let grey = color::Fg(color::LightBlack);
+                    let greybg = color::Bg(color::LightBlack);
+                    let blackfg = color::Fg(color::Black);
+                    let reset = style::Reset;
+                    let green = color::Bg(color::Green);
+
+                    if (current_loc && cur == 9) || all_peaks.contains(&[x, y].into()) {
+                        print!("{green}{c}{reset}",);
+                    } else if current_loc {
+                        print!("{whitebg}{blackfg}{c}{reset}",);
+                    } else if steps.contains(&[x, y].into()) {
+                        print!("{greybg}{blackfg}{c}{reset}",);
                     } else {
-                        print!(
-                            "{green}{c}{reset}",
-                            green = color::Fg(color::Green),
-                            reset = style::Reset
-                        );
+                        print!("{grey}{c}{reset}",);
                     }
-                } else {
-                    print!("{c}");
                 }
+
+                println!();
             }
-            println!();
         }
 
         if cur == 9 {
-            return 1;
+            peaks.insert(loc);
+
+            #[cfg(feature = "visualize")]
+            all_peaks.insert(loc);
+            #[cfg(feature = "visualize")]
+            std::thread::sleep_ms(10);
+        } else {
+            let moves = self.topography.adj_4(loc);
+
+            let mut score = 0;
+
+            moves.cells.into_iter().flatten().for_each(|cell| {
+                if cur + 1 == cell.data {
+                    #[cfg(feature = "visualize")]
+                    let mut steps = {
+                        let mut steps = steps.clone();
+                        steps.insert(cell.pos);
+                        steps
+                    };
+
+                    self.search(
+                        cell.pos,
+                        peaks,
+                        #[cfg(feature = "visualize")]
+                        &mut steps,
+                        #[cfg(feature = "visualize")]
+                        all_peaks,
+                    );
+                }
+            });
         }
-
-        let moves = self.topography.adj_4(loc);
-
-        let mut score = 0;
-
-        moves.cells.into_iter().flatten().for_each(|cell| {
-            // if cur == 8 && cell.data == 9 {
-            //     score += 1;
-            //     println!("found 9 at {}", cell.pos);
-            //     for (y, line) in output.lines().enumerate() {
-            //         for (x, c) in line.chars().enumerate() {
-            //             if cell.pos.x() == x as i64 && cell.pos.y() == y as i64 {
-            //                 print!(
-            //                     "{green}!{reset}",
-            //                     green = color::Fg(color::Green),
-            //                     reset = style::Reset
-            //                 );
-            //             } else {
-            //                 print!("{c}");
-            //             }
-            //         }
-            //         println!();
-            //     }
-            //} else
-            if cur + 1 == cell.data {
-                score += self.search(cell.pos);
-            }
-        });
-
-        score
     }
 }
 
