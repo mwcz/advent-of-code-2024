@@ -91,19 +91,19 @@ impl<T: Copy> Grid<T> {
     /// ```
     ///
     /// In words: up left, up, up right, left, right, down left, down, down right.
-    pub fn adj_4(&self, x: usize, y: usize) -> Adj4<T> {
+    pub fn adj_4(&self, loc: Point<2>) -> Adj4<T> {
         Adj4::new(
             [
-                (Some(x), y.checked_sub(1)),
-                (x.checked_sub(1), Some(y)),
-                (x.checked_add(1), Some(y)),
-                (Some(x), y.checked_add(1)),
+                (Some(loc.x()), loc.y().checked_sub(1)),
+                (loc.x().checked_sub(1), Some(loc.y())),
+                (loc.x().checked_add(1), Some(loc.y())),
+                (Some(loc.x()), loc.y().checked_add(1)),
             ]
             .map(|(adj_x, adj_y)| {
                 adj_x.and_then(|adj_x| {
                     adj_y.and_then(|adj_y| {
-                        self.cells.get(adj_y).and_then(|row| {
-                            row.get(adj_x)
+                        self.cells.get(adj_y as usize).and_then(|row| {
+                            row.get(adj_x as usize)
                                 .map(|cell_data| Cell::new([adj_x, adj_y].into(), *cell_data))
                         })
                     })
