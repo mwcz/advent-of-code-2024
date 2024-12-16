@@ -46,7 +46,7 @@ pub fn part1(model: Model) -> Answer {
         .trailheads
         .iter()
         .map(|trailhead| {
-            let mut peaks = HashSet::new();
+            let mut peaks = Vec::new();
 
             #[cfg(feature = "visualize")]
             let mut steps = [*trailhead].into();
@@ -66,7 +66,29 @@ pub fn part1(model: Model) -> Answer {
 }
 
 pub fn part2(model: Model) -> Answer {
-    0
+    #[cfg(feature = "visualize")]
+    let mut all_peaks = HashSet::new();
+
+    model
+        .trailheads
+        .iter()
+        .map(|trailhead| {
+            let mut peaks = Vec::new();
+
+            #[cfg(feature = "visualize")]
+            let mut steps = [*trailhead].into();
+
+            model.search(
+                *trailhead,
+                &mut peaks,
+                #[cfg(feature = "visualize")]
+                &mut steps,
+                #[cfg(feature = "visualize")]
+                &mut all_peaks,
+            );
+            peaks.len()
+        })
+        .sum()
 }
 
 pub struct Map {
@@ -78,7 +100,7 @@ impl Map {
     fn search(
         &self,
         loc: Point<2>,
-        mut peaks: &mut HashSet<Point<2>>,
+        mut peaks: &mut Vec<Point<2>>,
         #[cfg(feature = "visualize")] mut steps: &mut HashSet<Point<2>>,
         #[cfg(feature = "visualize")] mut all_peaks: &mut HashSet<Point<2>>,
     ) {
@@ -116,12 +138,13 @@ impl Map {
         }
 
         if cur == 9 {
-            peaks.insert(loc);
+            peaks.push(loc);
 
             #[cfg(feature = "visualize")]
-            all_peaks.insert(loc);
-            #[cfg(feature = "visualize")]
-            std::thread::sleep_ms(10);
+            {
+                all_peaks.insert(loc);
+                std::thread::sleep_ms(10);
+            }
         } else {
             let moves = self.topography.adj_4(loc);
 
